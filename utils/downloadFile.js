@@ -2,7 +2,7 @@
  * @Author: tangrenjie
  * @Date: 2020-08-27 10:48:29
  * @LastEditors: tangrenjie
- * @LastEditTime: 2020-08-27 15:53:58
+ * @LastEditTime: 2020-08-27 16:00:40
  * @Descripttion: 公共下载app的方法
  */
 
@@ -48,10 +48,10 @@ function checkDownloadLink(params) {
 		alert('参数必填');
 		return false;
 	}
-	if (!isLink(params.android) || !isLink(params.ios)) {
-		alert('链接地址不正确');
-		return false;
-	}
+	// if (!isLink(params.android) || !isLink(params.ios)) {
+	// 	alert('链接地址不正确');
+	// 	return false;
+	// }
 	return true;
 }
 
