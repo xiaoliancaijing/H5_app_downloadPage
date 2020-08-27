@@ -2,7 +2,7 @@
  * @Author: tangrenjie
  * @Date: 2020-08-27 10:48:29
  * @LastEditors: tangrenjie
- * @LastEditTime: 2020-08-27 14:17:50
+ * @LastEditTime: 2020-08-27 15:53:58
  * @Descripttion: 公共下载app的方法
  */
 
@@ -11,14 +11,17 @@ var imgBase64 =
 
 var agent = navigator.userAgent;
 
+//是否是微信环境
 function isWeixin() {
 	return agent.indexOf('MicroMessenger') > -1;
 }
 
+// 是否在安卓系统
 function isAndroid() {
 	return agent.indexOf('Android') > -1 || agent.indexOf('Adr') > -1;
 }
 
+// 是否在IOS系统
 function isIOS() {
 	return !!agent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 }
@@ -28,19 +31,24 @@ function isOthesAppScan() {
 	return agent.indexOf('weibo') > 0 || agent.indexOf('zhihu') > 0 || agent.indexOf('NewsApp') > 0;
 }
 
-// 校验是否为链接地址
+//是否是PC端windows环境
+function isWindows() {
+	return agent.indexOf('Windows') > 0;
+}
 
+// 校验是否为链接地址
 function isLink(link) {
 	let reg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~\/])+$/;
 	return reg.test(link);
 }
 
+// 参数校验
 function checkDownloadLink(params) {
 	if (typeof params !== 'object') {
 		alert('参数必填');
 		return false;
 	}
-	if (!isLink(params.android) || !isLink(params.android)) {
+	if (!isLink(params.android) || !isLink(params.ios)) {
 		alert('链接地址不正确');
 		return false;
 	}
@@ -54,6 +62,7 @@ function parseDom(arg) {
 	return objE.childNodes;
 }
 
+// 公共Mask弹层封装
 var TipMask = (function () {
 	function message() {
 		this.messageContainer = null;
@@ -93,23 +102,33 @@ var tipInstance = new TipMask.message();
 /**
  * @name: appDownload
  * @description:下载公共方法
- * @param  {object}  示例 ：  {android:"https://file.lilchain.com/app/xiaolian.apk",ios:'https://apps.apple.com/cn/app/%E5%B0%8F%E9%93%BE%E8%B4%A2%E7%BB%8F/id1490792036'}
+ * @param  {object}  示例 ：  {
+ * android:"https://file.lilchain.com/app/xiaolian.apk",
+ * ios:'https://apps.apple.com/cn/app/%E5%B0%8F%E9%93%BE%E8%B4%A2%E7%BB%8F/id1490792036',
+ * android_market: ''
+ * }
  * @return
  */
 function appDownload(config) {
 	if (!checkDownloadLink(config)) return;
 	if (isOthesAppScan()) {
-		// 这行代码好像都不满足， 我测试知乎是调用的Chrome内核，微博上扫码提示在浏览器中打开。
 		tipInstance.show();
 	} else if (isWeixin()) {
-		tipInstance.show();
+		if (config.android_market) {
+			location.href = config.android_market;
+		} else {
+			tipInstance.show();
+		}
 	} else if (isAndroid()) {
 		location.href = config.android;
 	} else if (isIOS()) {
 		location.href = config.ios;
+	} else if (isWindows()) {
+		location.href = config.android;
 	} else {
 		// 其他
 		console.log('其他');
+
 		// alert('其他');
 	}
 }
